@@ -44,6 +44,24 @@ export default function NotebookPage({
 
   const [data, setData] = useState<NotebookData | null>(null);
   const [prevCount, setPrevCount] = useState(0);
+  const [summary, setSummary] = useState("");
+  const [summarizing, setSummarizing] = useState(false);
+  const [summaryError, setSummaryError] = useState("");
+
+  async function handleSummarize() {
+    setSummarizing(true);
+    setSummaryError("");
+    try {
+      const res = await fetch(`/api/summarize/${encodeURIComponent(notebook)}`);
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to summarize");
+      setSummary(json.summary || "(no snippets to summarize)");
+    } catch (e) {
+      setSummaryError(e instanceof Error ? e.message : "Failed to summarize");
+    } finally {
+      setSummarizing(false);
+    }
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -76,6 +94,44 @@ export default function NotebookPage({
           ? `${data.snippets.length} snippets · live from ClickHouse · updates every 2s`
           : "Connecting…"}
       </p>
+
+      {/* Summarize */}
+      {data && data.snippets.length > 0 && (
+        <div className="summary-section" style={{ margin: "20px 0" }}>
+          <button
+            className="action-btn"
+            onClick={handleSummarize}
+            disabled={summarizing}
+            style={{
+              padding: "10px 18px",
+              borderRadius: 8,
+              border: "1px solid var(--border, #333)",
+              background: summarizing ? "#444" : "var(--accent, #6c5ce7)",
+              color: "#fff",
+              cursor: summarizing ? "default" : "pointer",
+              fontSize: 14,
+            }}
+          >
+            {summarizing ? "Summarizing…" : "✨ Summarize this notebook"}
+          </button>
+          {summaryError && (
+            <div className="loading" style={{ color: "#e06c75", marginTop: 12 }}>
+              {summaryError}
+            </div>
+          )}
+          {summary && (
+            <div
+              className="stat-card"
+              style={{ marginTop: 16, padding: "20px 24px", lineHeight: 1.6, whiteSpace: "pre-wrap" }}
+            >
+              <div className="stat-label" style={{ marginBottom: 10 }}>
+                Magpie summary
+              </div>
+              {summary}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Type breakdown */}
       {data && data.types.length > 0 && (

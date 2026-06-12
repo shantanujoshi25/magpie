@@ -7,6 +7,7 @@ import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { buildChartsDoc, type DashboardData } from "@/lib/buildDashboardDoc";
+import ChatPanel from "@/app/components/ChatPanel";
 
 const TYPE_CLASS: Record<string, string> = {
   definition: "definition",
@@ -20,7 +21,28 @@ export default function Home() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [chartsDoc, setChartsDoc] = useState("");
   const [connected, setConnected] = useState(false);
+  const [refiling, setRefiling] = useState(false);
+  const [refileMsg, setRefileMsg] = useState("");
   const prevDocRef = useRef("");
+
+  async function handleRefile() {
+    setRefiling(true);
+    setRefileMsg("");
+    try {
+      const res = await fetch("/api/refile", { method: "POST" });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed");
+      setRefileMsg(
+        json.moved > 0
+          ? `Moved ${json.moved} snippet${json.moved === 1 ? "" : "s"} out of Misc`
+          : "Nothing to move"
+      );
+    } catch (e) {
+      setRefileMsg(e instanceof Error ? e.message : "Failed to clean up");
+    } finally {
+      setRefiling(false);
+    }
+  }
 
   useEffect(() => {
     async function fetchData() {
@@ -80,7 +102,35 @@ export default function Home() {
       )}
 
       {/* Notebooks */}
-      <div className="section-heading">Notebooks</div>
+      <div
+        className="section-heading"
+        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}
+      >
+        <span>Notebooks</span>
+        {data && data.notebooks.some((n) => n.notebook === "Misc") && (
+          <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            {refileMsg && (
+              <span style={{ fontSize: 13, fontWeight: 400, opacity: 0.8 }}>{refileMsg}</span>
+            )}
+            <button
+              onClick={handleRefile}
+              disabled={refiling}
+              style={{
+                padding: "8px 14px",
+                borderRadius: 8,
+                border: "1px solid var(--border, #333)",
+                background: refiling ? "#444" : "var(--accent, #6c5ce7)",
+                color: "#fff",
+                cursor: refiling ? "default" : "pointer",
+                fontSize: 13,
+                fontWeight: 500,
+              }}
+            >
+              {refiling ? "Cleaning up…" : "🧹 Clean up Misc"}
+            </button>
+          </span>
+        )}
+      </div>
 
       {!data ? (
         <div className="loading">Connecting to ClickHouse…</div>
@@ -128,6 +178,9 @@ export default function Home() {
           />
         </div>
       )}
+
+      {/* Ask Magpie — agent-generated OpenUI */}
+      <ChatPanel />
     </div>
   );
 }
