@@ -1,0 +1,420 @@
+@import "tailwindcss";
+
+/* ── Force OpenUI into dark mode by overriding its CSS variables ── */
+:root {
+  --openui-background:           oklch(0.145 0 0 / 1);
+  --openui-foreground:           oklch(0.205 0 0 / 1);
+  --openui-popover-background:   oklch(0.205 0 0 / 1);
+  --openui-sunk:                 oklch(0.994 0 89.876 / 0.04);
+  --openui-sunk-light:           oklch(0.994 0 89.876 / 0.02);
+  --openui-sunk-deep:            oklch(0.994 0 89.876 / 0.08);
+  --openui-elevated:             oklch(0.994 0 89.876 / 0.08);
+  --openui-elevated-light:       oklch(0.994 0 89.876 / 0.04);
+  --openui-elevated-strong:      oklch(0.994 0 89.876 / 0.16);
+  --openui-elevated-intense:     oklch(0.994 0 89.876 / 0.32);
+  --openui-highlight:            oklch(0.994 0 89.876 / 0.04);
+  --openui-highlight-subtle:     oklch(0.994 0 89.876 / 0.02);
+  --openui-highlight-strong:     oklch(0.994 0 89.876 / 0.08);
+  --openui-highlight-intense:    oklch(0.994 0 89.876 / 0.3);
+  /* Text */
+  --openui-text-neutral-primary:   oklch(0.985 0 89.876 / 1);
+  --openui-text-neutral-secondary: oklch(0.985 0 89.876 / 0.55);
+  --openui-text-neutral-tertiary:  oklch(0.985 0 89.876 / 0.25);
+  --openui-text-neutral-link:      oklch(0.985 0 89.876 / 1);
+  --openui-text-brand:             oklch(0.994 0 89.876 / 1);
+  /* Borders */
+  --openui-border-default:             oklch(0.994 0 89.876 / 0.10);
+  --openui-border-interactive:         oklch(0.994 0 89.876 / 0.15);
+  --openui-border-interactive-emphasis:oklch(0.994 0 89.876 / 0.4);
+  --openui-border-interactive-selected:oklch(0.985 0 89.876 / 1);
+  /* Interactive */
+  --openui-interactive-accent-default: oklch(0.994 0 89.876 / 1);
+  --openui-interactive-accent-hover:   oklch(0.994 0 89.876 / 0.8);
+  --openui-interactive-accent-disabled:oklch(0.994 0 89.876 / 0.4);
+}
+
+/* ── Design tokens ── */
+:root {
+  --bg:          #0d1117;
+  --bg-card:     #161b22;
+  --bg-card-hover: #1c2230;
+  --border:      #21262d;
+  --border-hover:#6366f1;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted:  #484f58;
+  --accent:      #6366f1;
+  --accent-dim:  rgba(99,102,241,0.12);
+
+  /* type colors */
+  --type-definition: #60a5fa;
+  --type-formula:    #fbbf24;
+  --type-example:    #34d399;
+  --type-quote:      #a78bfa;
+  --type-image:      #f87171;
+}
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  color-scheme: dark;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Recharts dark overrides (used inside OpenUI chart components) ── */
+.recharts-cartesian-axis-tick-value,
+.recharts-label,
+.recharts-legend-item-text,
+.recharts-text {
+  fill: #8b949e !important;
+  color: #8b949e !important;
+}
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: #21262d !important;
+}
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: #161b22 !important;
+  border-color: #21262d !important;
+  color: #e6edf3 !important;
+}
+.recharts-default-tooltip .recharts-tooltip-label {
+  color: #e6edf3 !important;
+}
+.recharts-default-tooltip .recharts-tooltip-item {
+  color: #8b949e !important;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* ── Layout shell ── */
+.shell {
+  padding: 32px 40px;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+/* ── Top bar ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 36px;
+}
+
+.topbar-brand h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  margin: 0;
+  background: linear-gradient(135deg, #e6edf3 0%, #8b949e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.topbar-brand p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 2px 0 0;
+}
+
+/* Live indicator */
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #34d399;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.75); }
+}
+
+/* ── Stats row ── */
+.stats-row {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 36px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 24px;
+  min-width: 160px;
+  animation: fade-up 0.4s ease both;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -1px;
+  color: var(--text-primary);
+}
+
+/* ── Section heading ── */
+.section-heading {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+}
+
+/* ── Notebook grid ── */
+.notebook-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 44px;
+}
+
+.notebook-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  width: 260px;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  animation: fade-up 0.45s ease both;
+}
+
+.notebook-card:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+  box-shadow: 0 0 0 1px var(--accent-dim), 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.notebook-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.notebook-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.notebook-count {
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: rgba(139,148,158,0.12);
+  border-radius: 20px;
+  padding: 3px 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.notebook-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ── Type pill ── */
+.type-pill {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 20px;
+  letter-spacing: 0.01em;
+}
+
+.type-pill.definition { background: rgba(96,165,250,0.14); color: var(--type-definition); }
+.type-pill.formula    { background: rgba(251,191,36,0.14);  color: var(--type-formula); }
+.type-pill.example    { background: rgba(52,211,153,0.14);  color: var(--type-example); }
+.type-pill.quote      { background: rgba(167,139,250,0.14); color: var(--type-quote); }
+.type-pill.image      { background: rgba(248,113,113,0.14); color: var(--type-image); }
+.type-pill.neutral    { background: rgba(139,148,158,0.14); color: var(--text-secondary); }
+
+/* ── Analytics section ── */
+.analytics-section {
+  animation: fade-up 0.5s ease both;
+}
+
+/* Override OpenUI Renderer card backgrounds for dark mode */
+.analytics-section .openui-card,
+.notebook-detail .openui-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+/* ── Notebook detail page ── */
+.notebook-detail {
+  padding: 28px 40px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.back-link:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.detail-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  margin: 0 0 4px;
+}
+
+.detail-subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 28px;
+}
+
+/* Snippet cards in detail view */
+.snippet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.snippet-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  border-left-width: 3px;
+  animation: fade-up 0.3s ease both;
+}
+
+.snippet-card.definition { border-left-color: var(--type-definition); }
+.snippet-card.formula    { border-left-color: var(--type-formula); }
+.snippet-card.example    { border-left-color: var(--type-example); }
+.snippet-card.quote      { border-left-color: var(--type-quote); }
+.snippet-card.image      { border-left-color: var(--type-image); }
+
+.snippet-text {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.65;
+  margin-bottom: 8px;
+}
+
+.snippet-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.snippet-source {
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-muted);
+}
+
+.snippet-tokens {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ── Detail stats ── */
+.detail-stats {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+/* ── Animations ── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Stagger notebook cards */
+.notebook-card:nth-child(1) { animation-delay: 0ms; }
+.notebook-card:nth-child(2) { animation-delay: 60ms; }
+.notebook-card:nth-child(3) { animation-delay: 120ms; }
+.notebook-card:nth-child(4) { animation-delay: 180ms; }
+.notebook-card:nth-child(5) { animation-delay: 240ms; }
+.notebook-card:nth-child(6) { animation-delay: 300ms; }
+
+/* Stagger snippet cards */
+.snippet-card:nth-child(1)  { animation-delay: 20ms; }
+.snippet-card:nth-child(2)  { animation-delay: 50ms; }
+.snippet-card:nth-child(3)  { animation-delay: 80ms; }
+.snippet-card:nth-child(4)  { animation-delay: 110ms; }
+.snippet-card:nth-child(5)  { animation-delay: 140ms; }
+.snippet-card:nth-child(6)  { animation-delay: 170ms; }
+.snippet-card:nth-child(7)  { animation-delay: 200ms; }
+.snippet-card:nth-child(8)  { animation-delay: 230ms; }
+.snippet-card:nth-child(9)  { animation-delay: 260ms; }
+.snippet-card:nth-child(10) { animation-delay: 290ms; }
+
+/* Loading state */
+.loading {
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 48px 0;
+  text-align: center;
+}
+
+/* ── OpenUI dark overrides ── */
+.openui-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
